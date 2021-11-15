@@ -19,9 +19,12 @@ parser.add_argument(
 args = parser.parse_args()
 
 app = Flask(__name__)
+device = "cuda" if torch.cuda.is_available() else "cpu"
 warnings.filterwarnings('ignore')
+
 model = load_model('./models/catvdog.pth')
 model.eval()
+model.to(device)
 
 
 '''
@@ -49,7 +52,7 @@ def predict():
     for i in request.json['photos']:
         id = i['ID']
         image = base64_image_transform(i['img_code'])
-        image1 = image[None,:,:,:]
+        image1 = image[None,:,:,:].to(device)
         ps=torch.exp(model(image1))
         img_dict = {'ID': id,
                     'cat_prob': ps[0][0].item(),
