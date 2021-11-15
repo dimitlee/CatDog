@@ -33,4 +33,16 @@ for image in os.listdir(directory):
 response = requests.post(url, data=json.dumps(input))
 
 df = pd.DataFrame(response.json()['results'])
-df.to_excel('./analysis.xlsx')
+cat_tp = 0
+dog_tp = 0
+for i in df.index:
+    if df['ID'][i].split('.')[0] == 'cat' and df['cat_prob'][i] >= 0.5:
+        cat_tp += 1
+    if df['ID'][i].split('.')[0] == 'dog' and df['dog_prob'][i] > 0.5:
+        dog_tp += 1
+tp = pd.DataFrame({'cat_tp': [cat_tp], 'dog_tp': [dog_tp]})
+
+writer = pd.ExcelWriter('./analysis.xlsx', engine='xlsxwriter')
+df.to_excel(writer, sheet_name='Probabilities', index=False)
+tp.to_excel(writer, sheet_name='Analysis', index=False)
+writer.close()
