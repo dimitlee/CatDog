@@ -21,6 +21,7 @@ args = parser.parse_args()
 app = Flask(__name__)
 warnings.filterwarnings('ignore')
 model = load_model('./models/catvdog.pth')
+model.eval()
 
 
 '''
